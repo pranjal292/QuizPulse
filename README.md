@@ -92,3 +92,4 @@ Or connect this repository directly in the [Vercel Dashboard](https://vercel.com
 ## License
 
 MIT License &copy; 2026 QuizPulse
+
