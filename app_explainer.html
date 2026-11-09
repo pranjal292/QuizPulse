@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizPulse — Complete app.js Architecture & Code Deep Dive</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --paper: #ffffff;
+      --ink: #0f172a;
+      --ink-muted: #475569;
+      --accent: #245c3c;
+      --accent-light: #e8f2ec;
+      --accent-border: #9ec5ad;
+      --danger: #991b1b;
+      --danger-light: #fef2f2;
+      --amber: #92400e;
+      --amber-light: #fffbeb;
+      --border: #e2e8f0;
+      --mono: "SF Mono", Monaco, Consolas, "Liberation Mono", Courier, monospace;
+      --serif: Georgia, Cambria, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.65;
+      padding: 30px 20px 90px;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .badge-green { background: var(--accent-light); color: var(--accent); }
+    .badge-red { background: var(--danger-light); color: var(--danger); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 32px;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 15.5px;
+      color: var(--ink-muted);
+      margin-bottom: 18px;
+    }
+
+    .stat-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-item {
+      background: var(--bg);
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    .stat-desc {
+      font-size: 12px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-toc {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: center;
+      font-size: 13.5px;
+    }
+    .nav-toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .nav-toc a:hover {
+      text-decoration: underline;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      color: var(--ink);
+      margin: 40px 0 18px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .fn-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .fn-name {
+      font-family: var(--mono);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .fn-lines {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .fn-summary {
+      font-size: 14.5px;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .line-breakdown {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .line-breakdown th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .line-breakdown td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    .code-cell {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 6px 10px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      width: 45%;
+    }
+
+    .viva-callout {
+      background: #f0fdf4;
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      margin-top: 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+      color: #14532d;
+    }
+
+    .viva-callout strong {
+      display: block;
+      margin-bottom: 3px;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="tag-row">
+        <span class="badge badge-green">Assessment Runtime Engine</span>
+        <span class="badge badge-red">Anti-Cheat Enforcement</span>
+        <span class="badge badge-amber">Timer 2 Countdown</span>
+      </div>
+      <h1>QuizPulse: app.js Complete Explainer</h1>
+      <p class="subtitle">
+        A complete line-by-line breakdown of <code style="font-family:var(--mono);">app.js</code> (619 lines) — the core assessment engine that renders live quiz questions, manages the countdown clock, enforces 1-strike anti-cheat monitoring, auto-saves drafts, and grades student submissions.
+      </p>
+      <div class="stat-bar">
+        <div class="stat-item">
+          <div class="stat-num">8 Sections</div>
+          <div class="stat-desc">Core Modules</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">5 Anti-Cheat Triggers</div>
+          <div class="stat-desc">Zero Tolerance Policy</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">1000ms Loop</div>
+          <div class="stat-desc">Timer 2 Sync</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">3 Visibility Modes</div>
+          <div class="stat-desc">Post-Quiz Feedback</div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="nav-toc">
+      <strong>Jump to Section:</strong>
+      <a href="#sec-overview">0. Role of app.js</a>
+      <a href="#sec-state">1. Runtime State</a>
+      <a href="#sec-render">2. Rendering Questions</a>
+      <a href="#sec-timer">3. Timer 2 Management</a>
+      <a href="#sec-anticheat">4. 1-Strike Anti-Cheat</a>
+      <a href="#sec-grading">5. Scoring & Grading</a>
+      <a href="#sec-db">6. Database Operations</a>
+      <a href="#sec-visibility">7. Post-Quiz Visibility</a>
+    </nav>
+
+    <!-- SECTION 0 -->
+    <h2 class="section-title" id="sec-overview">
+      <span>0. What is app.js vs auth.js?</span>
+      <span class="section-num">Architecture</span>
+    </h2>
+    <div class="card">
+      <p class="fn-summary">
+        While <code style="font-family:var(--mono); font-weight:bold;">auth.js</code> handles identity, logins, and teacher overview analytics, <code style="font-family:var(--mono); font-weight:bold;">app.js</code> is the <strong>live exam runner</strong>. It executes solely on <code style="font-family:var(--mono);">quiz.html</code> to control the high-stakes test environment.
+      </p>
+      <p style="margin-top: 10px; font-size: 14.5px;">
+        It handles dynamic DOM rendering of question choice cards, runs the attempt countdown timer, monitors tab switching / window blur events, saves answers in real-time to prevent data loss, grades the attempt against the answer key, and seals the final score in Cloud Firestore.
+      </p>
+      <div class="viva-callout">
+        <strong>Viva Defense Tip:</strong> If an examiner asks: <em>"Where does the exam actually run?"</em> Say: <em>"Sir, <code style="font-family:var(--mono);">app.js</code> runs the live assessment engine on <code style="font-family:var(--mono);">quiz.html</code>. It manages the runtime state, listens to browser security events, and handles auto-submission."</em>
+      </div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <h2 class="section-title" id="sec-state">
+      <span>1. Quiz Runtime State</span>
+      <span class="section-num">Lines 15 – 34</span>
+    </h2>
+    <div class="card">
+      <p class="fn-summary">
+        Global variables that track the student's active exam session in memory:
+      </p>
+      <table class="line-breakdown">
+        <thead><tr><th>Variable</th><th>Purpose & Type</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="code-cell">var studentAnswersMap = {};</td>
+            <td>A dictionary storing the student's chosen option index for each question: <code style="font-family:var(--mono);">{ "q_1": 2, "q_2": 0 }</code>.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">var studentQuestionTimeMap = {};</td>
+            <td>Tracks exact seconds the student lingered on each question for teacher analytics.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">var quizCountdownIntervalId = null;</td>
+            <td>The handle returned by <code style="font-family:var(--mono);">setInterval()</code> so the timer can be paused or cleared with <code style="font-family:var(--mono);">clearInterval()</code>.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">var studentCheatViolations = 0;</td>
+            <td>Violation counter. Under the 1-strike rule, when this hits 1, the exam is immediately terminated.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">var isCurrentQuizSubmitted = false;</td>
+            <td>Safety latch flag that prevents duplicate submissions or timer ticks after the exam is sealed.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 2 -->
+    <h2 class="section-title" id="sec-render">
+      <span>2. Dynamic Question Rendering</span>
+      <span class="section-num">Lines 64 – 178</span>
+    </h2>
+    <div class="card">
+      <div class="fn-header">
+        <span class="fn-name">renderQuizQuestions(questionsList, container, counter)</span>
+        <span class="fn-lines">Lines 68 – 160</span>
+      </div>
+      <p class="fn-summary">
+        Dynamically constructs question cards with radio buttons in HTML using pure DOM manipulation (<code style="font-family:var(--mono);">createElement</code> and <code style="font-family:var(--mono);">appendChild</code>) without template libraries.
+      </p>
+      <div class="code-block">
+// Dynamic Question Generation Loop
+for (let i = 0; i &lt; questionsList.length; i = i + 1) {
+  const cardElement = document.createElement("div");
+  cardElement.className = "question-card";
+
+  // Label: Q01, Q02, etc.
+  const badgeElement = document.createElement("span");
+  badgeElement.textContent = "Q" + (i + 1 &lt; 10 ? "0" : "") + (i + 1);
+
+  // Radio button choices
+  for (let optIndex = 0; optIndex &lt; question.options.length; optIndex = optIndex + 1) {
+    const radioInput = document.createElement("input");
+    radioInput.type = "radio";
+    radioInput.name = "question_" + question.id;
+    radioInput.value = String(optIndex);
+
+    // Auto-save draft whenever clicked
+    radioInput.addEventListener("change", function() {
+      studentAnswersMap[question.id] = Number(radioInput.value);
+      saveStudentDraft(currentActiveOrgCode, currentActiveStudentId, studentAnswersMap, studentQuestionTimeMap);
+    });
+  }
+}</div>
+      <div class="viva-callout">
+        <strong>Viva Defense Tip:</strong> If the examiner says <em>"Show me where radio buttons are created"</em>, navigate to line 118 in <code style="font-family:var(--mono);">app.js</code> and explain how <code style="font-family:var(--mono);">radioInput.addEventListener("change", ...)</code> captures the choice and calls <code style="font-family:var(--mono);">saveStudentDraft()</code>.
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <h2 class="section-title" id="sec-timer">
+      <span>3. Timer 2 (Attempt Countdown)</span>
+      <span class="section-num">Lines 180 – 238</span>
+    </h2>
+    <div class="card">
+      <div class="fn-header">
+        <span class="fn-name">startQuizAttemptTimer(durationSeconds, displayElement, onExpired, onEnded)</span>
+        <span class="fn-lines">Lines 184 – 237</span>
+      </div>
+      <p class="fn-summary">
+        Executes a 1000ms loop that ticks down the student's remaining time, updates the MM:SS display, tracks time spent on questions, and polls Firestore to see if the teacher manually ended the exam.
+      </p>
+      <table class="line-breakdown">
+        <thead><tr><th>Code Snippet</th><th>Explanation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="code-cell">const elapsedSeconds = (Date.now() - quizStartEpochMs) / 1000;
+const remainingSeconds = totalAttemptDurationSeconds - elapsedSeconds;</td>
+            <td>Uses epoch timestamps (<code style="font-family:var(--mono);">Date.now()</code>) rather than just subtracting 1 each second. This ensures accuracy even if browser throttling occurs in the background.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">if (remainingSeconds <= 60) {
+  timerDisplayElement.classList.add("timer-urgent");
+}</td>
+            <td>Applies a pulsing red visual alert when under 60 seconds remain.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">if (remainingSeconds <= 0) {
+  clearInterval(quizCountdownIntervalId);
+  onTimerExpiredCallback();
+}</td>
+            <td>When time reaches 0, the interval stops and <code style="font-family:var(--mono);">saveFinalQuizSubmission(..., isAutoSubmitted = true, "timer_expired")</code> triggers automatically.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 4 -->
+    <h2 class="section-title" id="sec-anticheat">
+      <span>4. Anti-Cheat Engine (1-Strike Termination)</span>
+      <span class="section-num">Lines 241 – 298</span>
+    </h2>
+    <div class="card">
+      <div class="fn-header">
+        <span class="fn-name">armQuizAntiCheat(onViolationTerminateCallback)</span>
+        <span class="fn-lines">Lines 245 – 297</span>
+      </div>
+      <p class="fn-summary">
+        Monitors 5 distinct browser security events. Under our strict policy, any single violation invokes immediate termination.
+      </p>
+      <table class="line-breakdown">
+        <thead><tr><th>Monitored Event</th><th>Browser Trigger & Code Hook</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="code-cell">document.addEventListener("visibilitychange", function() {
+  if (document.hidden === true) {
+    handleViolationEvent("tab_switch");
+  }
+});</td>
+            <td><strong>Tab Switching:</strong> Fires whenever the user switches to another browser tab or minimizes the browser.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">window.addEventListener("blur", function() {
+  handleViolationEvent("window_blur");
+});</td>
+            <td><strong>Focus Loss:</strong> Fires if user clicks on another monitor, opens Discord/Notepad, or uses Alt+Tab.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">document.addEventListener("fullscreenchange", function() {
+  if (!document.fullscreenElement) {
+    handleViolationEvent("fullscreen_exit");
+  }
+});</td>
+            <td><strong>Fullscreen Escape:</strong> Fires if student exits fullscreen mode (<kbd>Esc</kbd> or <kbd>F11</kbd>).</td>
+          </tr>
+          <tr>
+            <td class="code-cell">document.addEventListener("contextmenu", function(e) {
+  e.preventDefault();
+  handleViolationEvent("context_menu");
+});</td>
+            <td><strong>Right-Click / Inspect:</strong> Prevents opening Developer Tools to inspect question data.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">document.addEventListener("copy", function(e) {
+  e.preventDefault();
+  handleViolationEvent("copy_attempt");
+});</td>
+            <td><strong>Clipboard Theft:</strong> Blocks copying question prompts to paste into ChatGPT or Google.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="viva-callout">
+        <strong>Viva Defense Tip:</strong> If the faculty asks: <em>"Can a student open another window on a dual-monitor setup?"</em> Answer: <em>"No, sir. Because we listen to <code style="font-family:var(--mono);">window.addEventListener('blur')</code>, clicking anywhere outside the active browser window immediately fires a violation and terminates the exam."</em>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <h2 class="section-title" id="sec-grading">
+      <span>5. Answer Checking & Grading</span>
+      <span class="section-num">Lines 300 – 323</span>
+    </h2>
+    <div class="card">
+      <div class="fn-header">
+        <span class="fn-name">calculateStudentScore(questionsList, responsesMap, answerKeyMap)</span>
+        <span class="fn-lines">Lines 305 – 322</span>
+      </div>
+      <p class="fn-summary">
+        Pure function that compares student responses against the teacher's answer key using a simple, readable <code style="font-family:var(--mono);">for</code> loop:
+      </p>
+      <div class="code-block">
+function calculateStudentScore(questionsList, responsesMap, answerKeyMap) {
+  let correctTotal = 0;
+
+  for (let i = 0; i &lt; questionsList.length; i = i + 1) {
+    const questionId = questionsList[i].id;
+    const studentChoice = responsesMap[questionId];
+    const correctChoice = answerKeyMap[questionId];
+
+    if (studentChoice !== undefined && correctChoice !== undefined) {
+      if (Number(studentChoice) === Number(correctChoice)) {
+        correctTotal = correctTotal + 1;
+      }
+    }
+  }
+
+  return correctTotal;
+}</div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <h2 class="section-title" id="sec-db">
+      <span>6. Database Operations & Session Purge</span>
+      <span class="section-num">Lines 325 – 462</span>
+    </h2>
+    <div class="card">
+      <div class="fn-header">
+        <span class="fn-name">saveStudentDraft(...) & saveFinalQuizSubmission(...)</span>
+        <span class="fn-lines">Lines 329 – 436</span>
+      </div>
+      <p class="fn-summary">
+        Ensures fault tolerance and seals the exam:
+      </p>
+      <ul style="font-size: 14.5px; margin-left: 20px; line-height: 1.8;">
+        <li><code style="font-family:var(--mono);">saveStudentDraft()</code>: Saves responses to both <code style="font-family:var(--mono);">sessionStorage</code> and Firestore. If the student accidentally reloads, progress is recovered.</li>
+        <li><code style="font-family:var(--mono);">saveFinalQuizSubmission()</code>: Halts the timer (<code style="font-family:var(--mono);">clearInterval</code>), marks status as <code style="font-family:var(--mono);">"submitted"</code> or <code style="font-family:var(--mono);">"terminated_cheat"</code>, computes final score, and commits to the database.</li>
+        <li><code style="font-family:var(--mono);">purgeStudentSession()</code>: Sets <code style="font-family:var(--mono);">sessionPurged: true</code> and clears <code style="font-family:var(--mono);">sessionStorage</code> so the student cannot re-enter the room.</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 7 -->
+    <h2 class="section-title" id="sec-visibility">
+      <span>7. Post-Quiz Visibility Rendering</span>
+      <span class="section-num">Lines 464 – 618</span>
+    </h2>
+    <div class="card">
+      <div class="fn-header">
+        <span class="fn-name">renderStudentResultsView(quiz, submission, container)</span>
+        <span class="fn-lines">Lines 468 – 618</span>
+      </div>
+      <p class="fn-summary">
+        Controls what the student is allowed to see after finishing their exam, governed by the teacher's <code style="font-family:var(--mono);">postQuizVisibility</code> setting:
+      </p>
+      <table class="line-breakdown">
+        <thead><tr><th>Visibility Setting</th><th>What the DOM Renders</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="code-cell">"marks_only"</td>
+            <td>Renders only the score card (e.g. 8/10, 80%). The function exits immediately; answers and questions are never injected into the DOM.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">"marks_and_answers"</td>
+            <td>Renders the score card plus a question-by-question breakdown showing what the student marked vs. the correct answer.</td>
+          </tr>
+          <tr>
+            <td class="code-cell">"full_analysis"</td>
+            <td>Renders score card, question breakdown, plus topic mastery percentages and per-question time analysis.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      QuizPulse Architecture Deep Dive · app.js Explainer Manual
+    </footer>
+  </div>
+</body>
+</html>
