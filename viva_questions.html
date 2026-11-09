@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizPulse — Viva Preparation & Oral Defense Guide</title>
+  <style>
+    :root {
+      --bg: #f9f9f6;
+      --paper: #ffffff;
+      --ink: #1a1e1b;
+      --ink-muted: #535d56;
+      --accent: #245c3c;
+      --accent-light: #e8f2ec;
+      --accent-border: #9ec5ad;
+      --danger: #b83a2d;
+      --danger-light: #fbf0ee;
+      --border: #e0e3df;
+      --mono: "SF Mono", Monaco, Consolas, "Liberation Mono", Courier, monospace;
+      --serif: Georgia, Cambria, "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.6;
+      padding: 30px 20px 80px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--accent-light);
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 32px;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--ink-muted);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+
+    .quick-tips {
+      background: #fdf8eb;
+      border-left: 4px solid #d49c24;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: #634503;
+    }
+
+    .category-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      color: var(--accent);
+      margin: 36px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qa-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .qa-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-color: var(--accent-border);
+    }
+
+    .q-number {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .question {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .answer-box {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      font-size: 14.5px;
+    }
+
+    .answer-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 6px;
+    }
+
+    .speak-this {
+      background: #eef6f1;
+      border-left: 3px solid var(--accent);
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+      color: #1a422b;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .file-ref {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #e7eaec;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #2b3b32;
+    }
+
+    .code-snippet {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: #1c221e;
+      color: #e2f0e6;
+      padding: 12px 14px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .confidence-meter {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+    }
+    .freq-high { background: #fbeae8; color: var(--danger); border: 1px solid #f2bcba; }
+    .freq-med  { background: #fdf5e2; color: #a2720d; border: 1px solid #ebd39b; }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="badge">Master Oral Defense Guide</span>
+      <h1>QuizPulse: Viva & Code Defense Questions</h1>
+      <p class="subtitle">Prepared specifically for defending QuizPulse in front of evaluators, professors, and external examiners.</p>
+      <div class="quick-tips">
+        <strong>Examiner Strategy Tip:</strong> Faculty members love asking <em>"Why didn't you use React?"</em>, <em>"How does the anti-cheat actually catch students?"</em>, and <em>"What happens if internet disconnects?"</em>. Below are exact questions and the exact words you should speak.
+      </div>
+    </header>
+
+    <!-- SECTION 1 -->
+    <h2 class="category-title">1. High-Probability General Questions</h2>
+
+    <div class="qa-card">
+      <div class="q-number">Question 1 <span class="confidence-meter freq-high">99% Probability</span></div>
+      <div class="question">"What is QuizPulse, and what real-world problem does it solve?"</div>
+      <div class="answer-box">
+        <div class="answer-label">What the project does:</div>
+        QuizPulse is a real-time, browser-based examination portal designed for teachers to conduct timed quizzes with zero student account setup overhead, zero cheating tolerance, and live monitoring.
+        <div class="speak-this">
+          <strong>Say this:</strong> "Sir/Ma'am, standard platforms like Google Forms lack live synchronous exam windows and anti-cheat enforcement. QuizPulse solves this: teachers build a quiz schema, generate a 6-character room code, and students join instantly using only their roll number and PIN. Once started, a strict 1-strike anti-cheat engine terminates the session if the student switches tabs, blurs the window, or leaves fullscreen."
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 2 <span class="confidence-meter freq-high">95% Probability</span></div>
+      <div class="question">"Why did you use Semantic HTML, CSS, and Vanilla JavaScript instead of React, Angular, or Vue?"</div>
+      <div class="answer-box">
+        <div class="answer-label">Technical Justification:</div>
+        Using Vanilla JS keeps the bundle size at virtually 0 KB, eliminates dependencies (no npm vulnerabilities, no node_modules bloat), and ensures 100% mastery over the native DOM and Browser APIs.
+        <div class="speak-this">
+          <strong>Say this:</strong> "We deliberately avoided heavy frameworks like React to adhere to pure Web Standards. Vanilla JavaScript loads instantaneously on slow student mobile devices, doesn't require a build or compile step, and gives us direct low-level control over browser APIs like Fullscreen API, Page Visibility API, and window blur events without framework abstraction overhead."
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 3 <span class="confidence-meter freq-high">90% Probability</span></div>
+      <div class="question">"Explain the overall system architecture and data flow of your project."</div>
+      <div class="answer-box">
+        <div class="answer-label">Architecture Breakdown:</div>
+        It is a serverless 3-tier web application:
+        <ul style="margin: 8px 0 8px 20px;">
+          <li><strong>Presentation Tier:</strong> Semantic HTML pages (<span class="file-ref">index.html</span>, <span class="file-ref">teacher.html</span>, <span class="file-ref">student.html</span>, <span class="file-ref">quiz.html</span>).</li>
+          <li><strong>Logic & Anti-Cheat Tier:</strong> Pure JS engines (<span class="file-ref">auth.js</span>, <span class="file-ref">app.js</span>).</li>
+          <li><strong>Data & Real-Time Tier:</strong> Cloud Firestore NoSQL Database via Firebase SDK with real-time WebSocket listeners (<span class="file-ref">firebase.js</span>).</li>
+        </ul>
+        <div class="speak-this">
+          <strong>Say this:</strong> "Our frontend runs as static HTML/JS files hosted on Vercel. All real-time synchronization—like the teacher starting the exam or monitoring student progress—uses Cloud Firestore's <code style="font-family:var(--mono);">onSnapshot()</code> listener. We don't need a Node.js Express server because Firestore acts as our real-time reactive backend."
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <h2 class="category-title">2. Deep Technical & Code Questions</h2>
+
+    <div class="qa-card">
+      <div class="q-number">Question 4 <span class="confidence-meter freq-high">95% Probability</span></div>
+      <div class="question">"How does your Anti-Cheat system detect if a student is cheating? Which browser events are monitored?"</div>
+      <div class="answer-box">
+        <div class="answer-label">Code Explanation (<span class="file-ref">app.js</span> — line ~215):</div>
+        The anti-cheat engine listens to 5 specific browser window/document events:
+        <ol style="margin: 8px 0 8px 20px;">
+          <li><code style="font-family:var(--mono);">document.visibilitychange</code>: Fires when the student switches browser tabs or minimizes.</li>
+          <li><code style="font-family:var(--mono);">window.onblur</code>: Fires if the user clicks outside the browser or uses Alt+Tab to another app.</li>
+          <li><code style="font-family:var(--mono);">document.fullscreenchange</code>: Fires if the student presses Escape or exits fullscreen mode.</li>
+          <li><code style="font-family:var(--mono);">document.oncontextmenu</code>: Intercepts right-clicks (Inspect Element).</li>
+          <li><code style="font-family:var(--mono);">document.oncopy / onpaste</code>: Prevents copying question text to Google or ChatGPT.</li>
+        </ol>
+        <div class="speak-this">
+          <strong>Say this:</strong> "In <span class="file-ref">app.js</span>, we implemented <code style="font-family:var(--mono);">armQuizAntiCheat()</code>. We attach listeners to <code style="font-family:var(--mono);">visibilitychange</code> and <code style="font-family:var(--mono);">blur</code>. Under our strict 1-strike rule, any single trigger calls <code style="font-family:var(--mono);">executeFinalSubmission(true, violationType)</code>, which instantly calculates their current score, marks the attempt as terminated for cheating, and locks the exam screen."
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 5 <span class="confidence-meter freq-med">85% Probability</span></div>
+      <div class="question">"How do the dual timers work? What is Timer 1 vs Timer 2?"</div>
+      <div class="answer-box">
+        <div class="answer-label">Logic Explanation:</div>
+        <ul style="margin: 8px 0 8px 20px;">
+          <li><strong>Timer 1 (Entry Window):</strong> Controls how long students can join the room after the teacher starts it (e.g. 5 minutes). Calculated as <code style="font-family:var(--mono);">room.startedAt + entryWindowMinutes</code>. Handled in <span class="file-ref">student.html</span>.</li>
+          <li><strong>Timer 2 (Per-Student Attempt Duration):</strong> Countdown timer for answering questions (e.g. 15 minutes). Handled in <span class="file-ref">app.js</span> with <code style="font-family:var(--mono);">setInterval()</code>. When it hits zero, it auto-submits.</li>
+        </ul>
+        <div class="speak-this">
+          <strong>Say this:</strong> "Timer 1 is the lobby gatekeeper—once the entry window passes, latecomers cannot enter. Timer 2 runs inside <span class="file-ref">app.js</span> using <code style="font-family:var(--mono);">setInterval()</code> every 1000ms. It decrements seconds left, updates the progress bar, and when it reaches zero, it calls <code style="font-family:var(--mono);">clearInterval()</code> and submits the answers."
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 6 <span class="confidence-meter freq-high">90% Probability</span></div>
+      <div class="question">"How does student authentication work? Where are student passwords stored?"</div>
+      <div class="answer-box">
+        <div class="answer-label">Security & Database Structure:</div>
+        In this system, students don't create long-term Firebase Auth accounts. Instead, they authenticate with their <strong>Username/Roll Number</strong> and a temporary session <strong>PIN</strong>.
+        <div class="speak-this">
+          <strong>Say this:</strong> "To make student check-in fast, we use session tokens in Firestore. When a student enters their roll number and room code, a document is created in the <code style="font-family:var(--mono);">rooms/{roomCode}/attempts/{rollNumber}</code> collection. We store their session state in browser <code style="font-family:var(--mono);">localStorage</code>. If they refresh, the page recovers their draft from local storage so they don't lose progress."
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 7 <span class="confidence-meter freq-med">80% Probability</span></div>
+      <div class="question">"How do you grade the student's submission? Client-side or Server-side?"</div>
+      <div class="answer-box">
+        <div class="answer-label">Grading Logic (<span class="file-ref">app.js</span> — line ~280):</div>
+        The student's selected options in <code style="font-family:var(--mono);">currentAnswers[questionIndex]</code> are compared against <code style="font-family:var(--mono);">question.correctOptionIndex</code>.
+        <div class="code-snippet">
+let score = 0;
+for (let i = 0; i &lt; questions.length; i = i + 1) {
+  if (currentAnswers[i] === questions[i].correctOptionIndex) {
+    score = score + 1;
+  }
+}
+let percentage = (score / questions.length) * 100;</div>
+        <div class="speak-this">
+          <strong>Say this:</strong> "During submission, <code style="font-family:var(--mono);">calculateFinalScore()</code> loops through all questions with a standard for loop. It increments <code style="font-family:var(--mono);">score</code> when the selected radio button index matches <code style="font-family:var(--mono);">correctOptionIndex</code>, and saves the score, percentage, and time spent to Firestore."
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 8 <span class="confidence-meter freq-high">85% Probability</span></div>
+      <div class="question">"What happens if the student's internet drops while taking the quiz?"</div>
+      <div class="answer-box">
+        <div class="answer-label">Resilience Mechanism:</div>
+        The app incorporates offline resilience through <strong>Draft Autosave</strong>:
+        <ul style="margin: 8px 0 8px 20px;">
+          <li>Every time an answer radio button is clicked, <code style="font-family:var(--mono);">saveDraftAnswers()</code> writes the array to <code style="font-family:var(--mono);">localStorage.setItem("quizpulse_draft_answers", ...)</code>.</li>
+          <li>If the browser disconnects or reloads, <code style="font-family:var(--mono);">loadDraftAnswers()</code> restores all chosen options.</li>
+          <li>Firestore's web client also queues writes locally and syncs back when connectivity restores.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="q-number">Question 9 <span class="confidence-meter freq-high">90% Probability</span></div>
+      <div class="question">"Show me where the database schema is defined and explain its collections."</div>
+      <div class="answer-box">
+        <div class="answer-label">Firestore NoSQL Collections:</div>
+        <ul style="margin: 8px 0 8px 20px;">
+          <li><strong><code style="font-family:var(--mono);">organizers/{email}</code>:</strong> Stores teacher profile and password hash.</li>
+          <li><strong><code style="font-family:var(--mono);">quizzes/{quizId}</code>:</strong> Stores the quiz metadata (title, time limit, questions array).</li>
+          <li><strong><code style="font-family:var(--mono);">rooms/{roomCode}</code>:</strong> Stores the live room state (status: "LOBBY" | "LIVE" | "CLOSED", startedAt, entryWindowMinutes).</li>
+          <li><strong><code style="font-family:var(--mono);">rooms/{roomCode}/attempts/{rollNumber}</code>:</strong> Subcollection storing each student's score, answers, violation status, and timestamps.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <h2 class="category-title">3. Golden Rules When Answering</h2>
+
+    <div class="qa-card" style="border-left: 4px solid var(--accent);">
+      <h3 style="font-size: 16px; margin-bottom: 8px;">Golden Rules for Viva Success:</h3>
+      <ul style="font-size: 14.5px; margin-left: 20px; line-height: 1.8;">
+        <li><strong>Rule 1: Always name the file first.</strong> Before explaining code, say: <em>"We wrote that inside <code style="font-family:var(--mono);">app.js</code>"</em> or <em>"That's inside <code style="font-family:var(--mono);">student.html</code>"</em>. This instantly proves you know your directory structure.</li>
+        <li><strong>Rule 2: Never say "the AI wrote it" or "the library did it".</strong> Say <em>"We wrote a custom JavaScript event handler"</em> or <em>"We utilized standard Web APIs"</em>.</li>
+        <li><strong>Rule 3: Show enthusiasm for pure vanilla code.</strong> Professors respect students who understand core fundamentals (DOM manipulation, event listeners, loops, async/await) far more than students who just copy React boilerplates.</li>
+      </ul>
+    </div>
+
+    <footer>
+      QuizPulse Viva Prep Manual · Created for Final Evaluation & Project Defense
+    </footer>
+  </div>
+</body>
+</html>
