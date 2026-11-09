@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizPulse — Real-Time Assessment Platform</title>
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES (PRESSED-LEAF THEME TOKENS)
+       ========================================================================== */
+    :root {
+      --paper: #f1f1ec;
+      --card: #fcfcfa;
+      --raised: #e7e7e1;
+      --sunken: #ecece6;
+      --hover: #eaeae3;
+
+      --ink: #161917;
+      --ink-2: #4d5350;
+      --ink-3: #666c68;
+
+      --line: rgba(22, 25, 23, 0.10);
+      --line-strong: rgba(22, 25, 23, 0.20);
+
+      --accent: #245c3c;
+      --accent-dark: #1b4a2f;
+      --accent-soft: rgba(36, 92, 60, 0.10);
+      --on-accent: #f7fbf7;
+
+      --danger: #a33a2c;
+      --danger-soft: rgba(163, 58, 44, 0.10);
+
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+
+    /* ==========================================================================
+       2. BASIC RESET & LAYOUT
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink);
+      background-color: var(--paper);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ==========================================================================
+       3. HEADER & BRAND NAVIGATION
+       ========================================================================== */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+      padding: 0 32px;
+      background-color: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       4. HERO & MAIN CONTENT
+       ========================================================================== */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      text-align: center;
+    }
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-3);
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: 38px;
+      font-weight: 500;
+      line-height: 1.2;
+      color: var(--ink);
+      max-width: 680px;
+      margin-bottom: 16px;
+    }
+
+    .hero-description {
+      font-size: 16px;
+      color: var(--ink-2);
+      max-width: 540px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    /* ==========================================================================
+       5. TWO-PATH NAVIGATION CARDS
+       ========================================================================== */
+    .paths-grid {
+      display: flex;
+      gap: 24px;
+      width: 100%;
+      max-width: 840px;
+      text-align: left;
+    }
+
+    .path-card {
+      flex: 1;
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 2px 4px rgba(22, 25, 23, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .path-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background-color: var(--raised);
+      color: var(--ink-2);
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+
+    .path-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .path-desc {
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* ==========================================================================
+       6. BUTTONS & FORMS
+       ========================================================================== */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-primary {
+      background-color: var(--accent);
+      color: var(--on-accent);
+    }
+
+    .button-primary:hover:not(:disabled) {
+      background-color: var(--accent-dark);
+    }
+
+    .button-secondary {
+      background-color: var(--card);
+      border-color: var(--line-strong);
+      color: var(--ink);
+    }
+
+    .button-secondary:hover:not(:disabled) {
+      background-color: var(--raised);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+
+    .input-text {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--ink);
+      background-color: var(--paper);
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+    }
+
+    .input-text:focus {
+      outline: 2px solid var(--accent);
+    }
+
+    .code-input {
+      font-family: var(--mono);
+      font-size: 20px;
+      letter-spacing: 0.16em;
+      text-align: center;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 8px 0;
+      text-align: center;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+
+    .auth-tab.tab-active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .error-box {
+      background-color: var(--danger-soft);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    /* ==========================================================================
+       7. TOAST NOTIFICATIONS & FOOTER
+       ========================================================================== */
+    .toast-message {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .toast-success {
+      background-color: var(--accent);
+      color: var(--on-accent);
+    }
+
+    .toast-error {
+      background-color: var(--danger);
+      color: #fff;
+    }
+
+    .app-footer {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid var(--line);
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .paths-grid {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <a href="index.html" class="brand-logo">
+      <div class="brand-icon">Q</div>
+      <span class="brand-name">QuizPulse</span>
+    </a>
+    <div></div>
+  </header>
+
+  <!-- Main Hero & Two-Path Container -->
+  <main class="main-container">
+    <div class="hero-kicker">Secure Real-Time Assessment</div>
+    <h1 class="hero-title">A unified platform for academic examinations.</h1>
+    <p class="hero-description">
+      Synchronized room timers, anti-cheat detection, and instant evaluation with granular post-quiz visibility.
+    </p>
+
+    <!-- Two Paths Grid -->
+    <div class="paths-grid">
+
+      <!-- Path 1: Organizer Portal (Login / Sign Up) -->
+      <div class="path-card">
+        <div>
+          <span class="path-tag">FACULTY & ORGANIZERS</span>
+          <h2 class="path-title">Organizer Portal</h2>
+          <p class="path-desc">Create JSON assessments and launch live rooms. No verification needed — one account per email.</p>
+
+          <div class="auth-tabs">
+            <button id="auth-tab-login" type="button" class="auth-tab tab-active">Sign In</button>
+            <button id="auth-tab-signup" type="button" class="auth-tab">Create Account</button>
+          </div>
+
+          <div id="auth-error" class="error-box hidden"></div>
+
+          <form id="teacher-auth-form">
+            <div id="group-display-name" class="form-group hidden">
+              <label class="form-label" for="auth-name">Full Name</label>
+              <input id="auth-name" type="text" class="input-text" placeholder="Prof. Jane Doe">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="auth-email">Faculty Email</label>
+              <input id="auth-email" type="email" class="input-text" placeholder="organizer@university.edu" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="auth-password">Password</label>
+              <input id="auth-password" type="password" class="input-text" placeholder="••••••••" required>
+            </div>
+
+            <button id="auth-submit-btn" type="submit" class="button button-primary">
+              Sign In to Dashboard
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Path 2: Student Portal (Enter Org Code) -->
+      <div class="path-card">
+        <div>
+          <span class="path-tag">CANDIDATES & STUDENTS</span>
+          <h2 class="path-title">Student Portal</h2>
+          <p class="path-desc">Enter your 6-digit room code to join your assigned assessment room and begin testing.</p>
+
+          <div id="student-error" class="error-box hidden"></div>
+
+          <form id="student-code-form">
+            <div class="form-group">
+              <label class="form-label" for="student-org-code">6-Digit Room Code</label>
+              <input id="student-org-code" type="text" maxlength="6" class="input-text code-input" placeholder="000000" required>
+            </div>
+
+            <button id="student-enter-btn" type="submit" class="button button-secondary">
+              Enter Assessment Room
+            </button>
+          </form>
+
+          <div style="margin-top: 24px; font-size: 12px; color: var(--ink-3); line-height: 1.5;">
+            • Single attempt per student is enforced.<br>
+            • Password equals student ID.<br>
+            • Anti-cheat monitoring is armed on start.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer Credits -->
+  <footer class="app-footer">
+    QuizPulse &copy; 2026
+  </footer>
+
+  <div id="notification-toast" class="toast-message hidden"></div>
+
+  <!-- ==========================================================================
+       SCRIPTS: Firebase CDN -> firebase.js -> auth.js (No app.js needed here)
+       ========================================================================== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    // ===== DOM ELEMENTS =====
+    const authTabLogin = document.getElementById("auth-tab-login");
+    const authTabSignup = document.getElementById("auth-tab-signup");
+    const groupDisplayName = document.getElementById("group-display-name");
+    const authNameInput = document.getElementById("auth-name");
+    const authEmailInput = document.getElementById("auth-email");
+    const authPasswordInput = document.getElementById("auth-password");
+    const authSubmitBtn = document.getElementById("auth-submit-btn");
+    const authErrorBox = document.getElementById("auth-error");
+    const teacherAuthForm = document.getElementById("teacher-auth-form");
+
+    const studentOrgCodeInput = document.getElementById("student-org-code");
+    const studentErrorBox = document.getElementById("student-error");
+    const studentCodeForm = document.getElementById("student-code-form");
+
+    let teacherAuthMode = "login";
+
+    // Check if teacher is already logged in
+    const existingTeacher = getLoggedInTeacher();
+    if (existingTeacher !== null) {
+      authSubmitBtn.textContent = "Continue as " + existingTeacher.name;
+    }
+
+    // Toggle Sign In vs Create Account tabs
+    authTabLogin.addEventListener("click", function() {
+      teacherAuthMode = "login";
+      authTabLogin.classList.add("tab-active");
+      authTabSignup.classList.remove("tab-active");
+      groupDisplayName.classList.add("hidden");
+      authSubmitBtn.textContent = "Sign In to Dashboard";
+      authErrorBox.classList.add("hidden");
+    });
+
+    authTabSignup.addEventListener("click", function() {
+      teacherAuthMode = "signup";
+      authTabSignup.classList.add("tab-active");
+      authTabLogin.classList.remove("tab-active");
+      groupDisplayName.classList.remove("hidden");
+      authSubmitBtn.textContent = "Create Organizer Account";
+      authErrorBox.classList.add("hidden");
+    });
+
+    // Handle Teacher Auth Submission
+    teacherAuthForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      authErrorBox.classList.add("hidden");
+
+      const email = authEmailInput.value.trim();
+      const password = authPasswordInput.value;
+      const displayName = authNameInput.value.trim();
+
+      if (email === "" || password === "") {
+        authErrorBox.textContent = "Please enter both your email and password.";
+        authErrorBox.classList.remove("hidden");
+        return;
+      }
+
+      authSubmitBtn.disabled = true;
+      authSubmitBtn.textContent = "Authenticating...";
+
+      let result = null;
+      if (teacherAuthMode === "signup") {
+        result = await teacherSignUp(email, password, displayName);
+      } else {
+        result = await teacherSignIn(email, password);
+      }
+
+      authSubmitBtn.disabled = false;
+
+      if (result.success === true) {
+        window.location.href = "teacher.html";
+      } else {
+        authSubmitBtn.textContent = teacherAuthMode === "signup" ? "Create Organizer Account" : "Sign In to Dashboard";
+        authErrorBox.textContent = result.errorMessage;
+        authErrorBox.classList.remove("hidden");
+      }
+    });
+
+    // Handle Student Code Submission
+    studentCodeForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      studentErrorBox.classList.add("hidden");
+
+      const orgCode = studentOrgCodeInput.value.trim();
+      if (orgCode.length !== 6) {
+        studentErrorBox.textContent = "Please enter a valid 6-digit room code.";
+        studentErrorBox.classList.remove("hidden");
+        return;
+      }
+
+      const enterBtn = document.getElementById("student-enter-btn");
+      enterBtn.disabled = true;
+      enterBtn.textContent = "Verifying room...";
+
+      const quiz = await fetchQuizByCode(orgCode);
+      enterBtn.disabled = false;
+      enterBtn.textContent = "Enter Assessment Room";
+
+      if (quiz === null) {
+        studentErrorBox.textContent = "Quiz room " + orgCode + " does not exist.";
+        studentErrorBox.classList.remove("hidden");
+        return;
+      }
+
+      // Redirect to student portal with room code
+      window.location.href = "student.html?code=" + encodeURIComponent(orgCode);
+    });
+  </script>
+</body>
+</html>

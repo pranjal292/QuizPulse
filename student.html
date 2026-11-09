@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizPulse — Student Portal</title>
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES (PRESSED-LEAF THEME TOKENS)
+       ========================================================================== */
+    :root {
+      --paper: #f1f1ec;
+      --card: #fcfcfa;
+      --raised: #e7e7e1;
+      --sunken: #ecece6;
+      --hover: #eaeae3;
+
+      --ink: #161917;
+      --ink-2: #4d5350;
+      --ink-3: #666c68;
+
+      --line: rgba(22, 25, 23, 0.10);
+      --line-strong: rgba(22, 25, 23, 0.20);
+
+      --accent: #245c3c;
+      --accent-dark: #1b4a2f;
+      --accent-soft: rgba(36, 92, 60, 0.10);
+      --on-accent: #f7fbf7;
+
+      --danger: #a33a2c;
+      --danger-soft: rgba(163, 58, 44, 0.10);
+
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+
+    /* ==========================================================================
+       2. BASIC RESET & APP LAYOUT
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink);
+      background-color: var(--paper);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ==========================================================================
+       3. TOP HEADER
+       ========================================================================== */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56px;
+      padding: 0 28px;
+      background-color: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .user-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      border-radius: 6px;
+      background-color: var(--raised);
+      color: var(--ink-2);
+    }
+
+    /* ==========================================================================
+       4. MAIN CONTAINER & CARDS
+       ========================================================================== */
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+    }
+
+    .portal-card {
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 36px 32px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(22, 25, 23, 0.05);
+      text-align: center;
+    }
+
+    .card-kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* ==========================================================================
+       5. FORMS & INPUTS
+       ========================================================================== */
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+
+    .input-text {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--ink);
+      background-color: var(--paper);
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+    }
+
+    .input-text:focus {
+      outline: 2px solid var(--accent);
+    }
+
+    .code-input {
+      font-family: var(--mono);
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--ink-3);
+      margin-top: 4px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-primary {
+      background-color: var(--accent);
+      color: var(--on-accent);
+    }
+
+    .button-primary:hover:not(:disabled) {
+      background-color: var(--accent-dark);
+    }
+
+    .button-secondary {
+      background-color: var(--card);
+      border-color: var(--line-strong);
+      color: var(--ink);
+    }
+
+    .button-secondary:hover:not(:disabled) {
+      background-color: var(--raised);
+    }
+
+    .error-box {
+      background-color: var(--danger-soft);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    /* ==========================================================================
+       6. WAITING ROOM STYLES & PULSE ANIMATION
+       ========================================================================== */
+    .pulse-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 24px 0;
+    }
+
+    .pulse-dot {
+      width: 12px;
+      height: 12px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      animation: pulseAnim 1.4s infinite ease-in-out both;
+    }
+
+    .pulse-dot:nth-child(1) { animation-delay: -0.32s; }
+    .pulse-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes pulseAnim {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .meta-box {
+      background-color: var(--sunken);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 20px 0;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .timer-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: 8px;
+      background-color: var(--accent-soft);
+      border: 1px solid var(--accent);
+      margin: 12px 0;
+    }
+
+    .toast-message {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .toast-success { background-color: var(--accent); color: var(--on-accent); }
+    .toast-error { background-color: var(--danger); color: #fff; }
+
+    .app-footer {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid var(--line);
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <a href="index.html" class="brand-logo">
+      <div class="brand-icon">Q</div>
+      <span class="brand-name">QuizPulse</span>
+    </a>
+    <div>
+      <span id="student-status-badge" class="user-badge">Candidate Portal</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- ====================================================================
+         VIEW 1: STUDENT LOGIN & ROOM VALIDATION
+         ==================================================================== -->
+    <section id="view-student-login" class="portal-card">
+      <div class="card-kicker">ASSESSMENT ACCESS</div>
+      <h1 class="card-title">Candidate Check-In</h1>
+      <p class="card-desc">Enter your 6-digit room code and student credentials to register your attempt.</p>
+
+      <div id="login-error-box" class="error-box hidden"></div>
+
+      <form id="student-login-form">
+        <div class="form-group">
+          <label class="form-label" for="input-room-code">6-Digit Room Code</label>
+          <input id="input-room-code" type="text" maxlength="6" class="input-text code-input" placeholder="000000" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-student-id">Student ID (Username)</label>
+          <input id="input-student-id" type="text" class="input-text" placeholder="e.g. 2025kucp1025" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-student-password">Password</label>
+          <input id="input-student-password" type="text" class="input-text" placeholder="Auto-filled to match Student ID" required>
+          <div class="hint-text">Your password must match your Student ID.</div>
+        </div>
+
+        <button id="btn-login-submit" type="submit" class="button button-primary">
+          Join Assessment Room
+        </button>
+      </form>
+
+      <div style="margin-top: 20px;">
+        <a href="index.html" style="color: var(--ink-2); text-decoration: none; font-size: 12.5px; display: inline-flex; align-items: center; gap: 4px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Return to Home
+        </a>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         VIEW 2: SYNCHRONIZED WAITING ROOM
+         ==================================================================== -->
+    <section id="view-waiting-room" class="portal-card hidden">
+      <div class="card-kicker">ASSESSMENT LOBBY</div>
+      <h1 id="waiting-quiz-title" class="card-title">Midterm Examination</h1>
+      <p id="waiting-status-desc" class="card-desc">Waiting for the organizer to start the assessment session...</p>
+
+      <div class="pulse-container">
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+      </div>
+
+      <div class="meta-box">
+        <div><strong>Room Code:</strong> <span id="waiting-code" style="font-family: var(--mono); font-weight: bold;">000000</span></div>
+        <div><strong>Candidate:</strong> <span id="waiting-student-id">Student</span></div>
+        <div><strong>Total Questions:</strong> <span id="waiting-q-count">0</span></div>
+        <div><strong>Time Allowed:</strong> <span id="waiting-duration">0</span> seconds</div>
+      </div>
+
+      <!-- Timer 1: Entry Window Countdown (Shown once room is activated) -->
+      <div id="entry-window-container" class="hidden">
+        <div style="font-size: 12px; color: var(--ink-3); text-transform: uppercase;">Entry Window Closing In</div>
+        <div id="entry-timer-display" class="timer-badge">05:00</div>
+        <p style="font-size: 12px; color: var(--ink-2); margin-bottom: 12px;">You must click below to enter before this timer hits zero.</p>
+        <button id="btn-enter-quiz" type="button" class="button button-primary">
+          Enter Quiz Now
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         VIEW 3: BLOCKED / SESSION EXPIRED SCREEN
+         ==================================================================== -->
+    <section id="view-blocked" class="portal-card hidden">
+      <div class="card-kicker" style="color: var(--danger);">ACCESS LOCKED</div>
+      <h1 id="blocked-title" class="card-title" style="color: var(--danger);">Entry Window Closed</h1>
+      <p id="blocked-desc" class="card-desc">The entry window closed before your attempt started.</p>
+
+      <div style="margin-top: 24px;">
+        <button id="btn-blocked-home" type="button" class="button button-secondary">
+          Return to Home
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Credits -->
+  <footer class="app-footer">
+    QuizPulse &copy; 2026
+  </footer>
+
+  <div id="notification-toast" class="toast-message hidden"></div>
+
+  <!-- ==========================================================================
+       SCRIPTS: Firebase CDN -> firebase.js -> auth.js (No app.js needed here)
+       ========================================================================== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    // ===== DOM ELEMENTS =====
+    const studentStatusBadge = document.getElementById("student-status-badge");
+    const viewStudentLogin = document.getElementById("view-student-login");
+    const viewWaitingRoom = document.getElementById("view-waiting-room");
+    const viewBlocked = document.getElementById("view-blocked");
+
+    const inputRoomCode = document.getElementById("input-room-code");
+    const inputStudentId = document.getElementById("input-student-id");
+    const inputStudentPassword = document.getElementById("input-student-password");
+    const btnLoginSubmit = document.getElementById("btn-login-submit");
+    const loginErrorBox = document.getElementById("login-error-box");
+    const studentLoginForm = document.getElementById("student-login-form");
+
+    const waitingQuizTitle = document.getElementById("waiting-quiz-title");
+    const waitingStatusDesc = document.getElementById("waiting-status-desc");
+    const waitingCode = document.getElementById("waiting-code");
+    const waitingStudentId = document.getElementById("waiting-student-id");
+    const waitingQCount = document.getElementById("waiting-q-count");
+    const waitingDuration = document.getElementById("waiting-duration");
+    const entryWindowContainer = document.getElementById("entry-window-container");
+    const entryTimerDisplay = document.getElementById("entry-timer-display");
+    const btnEnterQuiz = document.getElementById("btn-enter-quiz");
+
+    const blockedTitle = document.getElementById("blocked-title");
+    const blockedDesc = document.getElementById("blocked-desc");
+    const btnBlockedHome = document.getElementById("btn-blocked-home");
+
+    let currentOrgCode = "";
+    let currentStudentId = "";
+    let activeQuizObj = null;
+    let waitingRoomInterval = null;
+
+    // Check if room code is passed in URL query string (e.g. student.html?code=123456)
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeParam = urlParams.get("code");
+    if (codeParam) {
+      inputRoomCode.value = codeParam.trim();
+    }
+
+    // Password MUST equal username -> auto-fill password as student types ID
+    inputStudentId.addEventListener("input", function() {
+      inputStudentPassword.value = inputStudentId.value.trim();
+    });
+
+    // Handle Student Login Submission
+    studentLoginForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      loginErrorBox.classList.add("hidden");
+
+      const orgCode = inputRoomCode.value.trim();
+      const studentId = inputStudentId.value.trim();
+      const password = inputStudentPassword.value.trim();
+
+      if (orgCode.length !== 6 || studentId === "" || password === "") {
+        loginErrorBox.textContent = "Please fill in all fields with a valid 6-digit room code.";
+        loginErrorBox.classList.remove("hidden");
+        return;
+      }
+
+      btnLoginSubmit.disabled = true;
+      btnLoginSubmit.textContent = "Connecting to room...";
+
+      const loginResult = await studentLogin(orgCode, studentId, password);
+      btnLoginSubmit.disabled = false;
+      btnLoginSubmit.textContent = "Join Assessment Room";
+
+      if (loginResult.success === false) {
+        loginErrorBox.textContent = loginResult.errorMessage;
+        loginErrorBox.classList.remove("hidden");
+        return;
+      }
+
+      currentOrgCode = orgCode;
+      currentStudentId = studentId;
+      activeQuizObj = loginResult.quiz;
+
+      // If student already completed the quiz, redirect directly to quiz results
+      if (loginResult.isAlreadyCompleted === true) {
+        window.location.href = "quiz.html?code=" + encodeURIComponent(orgCode) + "&student=" + encodeURIComponent(studentId);
+        return;
+      }
+
+      // Enter waiting room
+      showWaitingRoom(loginResult.quiz, studentId);
+    });
+
+    // Displays the waiting room
+    function showWaitingRoom(quiz, studentId) {
+      viewStudentLogin.classList.add("hidden");
+      viewWaitingRoom.classList.remove("hidden");
+
+      studentStatusBadge.textContent = "Candidate: " + studentId;
+      waitingQuizTitle.textContent = quiz.quizTitle;
+      waitingCode.textContent = quiz.orgId;
+      waitingStudentId.textContent = studentId;
+      waitingQCount.textContent = quiz.questions ? quiz.questions.length : 0;
+      waitingDuration.textContent = quiz.attemptDurationSeconds || 600;
+
+      checkWaitingRoomState(quiz);
+
+      // Poll Firestore/database every 2 seconds for organizer Start button click
+      waitingRoomInterval = setInterval(async function() {
+        const liveQuiz = await fetchQuizByCode(quiz.orgId);
+        if (liveQuiz !== null) {
+          activeQuizObj = liveQuiz;
+          checkWaitingRoomState(liveQuiz);
+        }
+      }, 2000);
+    }
+
+    function checkWaitingRoomState(quiz) {
+      if (quiz.status === "waiting") {
+        waitingStatusDesc.textContent = "The organizer has not started the session yet. Please keep this tab open.";
+        entryWindowContainer.classList.add("hidden");
+      } else if (quiz.status === "active") {
+        waitingStatusDesc.textContent = "The room is now LIVE! Click 'Enter Quiz Now' to start.";
+        entryWindowContainer.classList.remove("hidden");
+
+        // Calculate Timer 1: Entry Window countdown
+        const elapsedSeconds = (Date.now() - quiz.quizStartTimestamp) / 1000;
+        const entryRemaining = (quiz.entryWindowSeconds || 300) - elapsedSeconds;
+
+        if (entryRemaining <= 0) {
+          if (waitingRoomInterval !== null) {
+            clearInterval(waitingRoomInterval);
+          }
+          showBlockedScreen("Entry Window Closed", "The entry window closed before your attempt started.");
+        } else {
+          const minutes = Math.floor(entryRemaining / 60);
+          const seconds = Math.floor(entryRemaining % 60);
+          const minStr = minutes < 10 ? "0" + minutes : minutes;
+          const secStr = seconds < 10 ? "0" + seconds : seconds;
+          entryTimerDisplay.textContent = minStr + ":" + secStr;
+        }
+      } else if (quiz.status === "ended") {
+        if (waitingRoomInterval !== null) {
+          clearInterval(waitingRoomInterval);
+        }
+        showBlockedScreen("Assessment Ended", "The organizer has closed this assessment session.");
+      }
+    }
+
+    // Enter Quiz Now Button
+    btnEnterQuiz.addEventListener("click", function() {
+      if (waitingRoomInterval !== null) {
+        clearInterval(waitingRoomInterval);
+      }
+      window.location.href = "quiz.html?code=" + encodeURIComponent(currentOrgCode) + "&student=" + encodeURIComponent(currentStudentId);
+    });
+
+    // Shows Blocked Screen
+    function showBlockedScreen(title, desc) {
+      viewWaitingRoom.classList.add("hidden");
+      viewStudentLogin.classList.add("hidden");
+      viewBlocked.classList.remove("hidden");
+
+      blockedTitle.textContent = title;
+      blockedDesc.textContent = desc;
+    }
+
+    btnBlockedHome.addEventListener("click", function() {
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
+

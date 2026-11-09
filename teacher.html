@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizPulse — Organizer Portal</title>
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES (PRESSED-LEAF THEME TOKENS)
+       ========================================================================== */
+    :root {
+      --paper: #f1f1ec;
+      --card: #fcfcfa;
+      --raised: #e7e7e1;
+      --sunken: #ecece6;
+      --hover: #eaeae3;
+
+      --ink: #161917;
+      --ink-2: #4d5350;
+      --ink-3: #666c68;
+
+      --line: rgba(22, 25, 23, 0.10);
+      --line-strong: rgba(22, 25, 23, 0.20);
+
+      --accent: #245c3c;
+      --accent-dark: #1b4a2f;
+      --accent-soft: rgba(36, 92, 60, 0.10);
+      --on-accent: #f7fbf7;
+
+      --ok: #245c3c;
+      --danger: #a33a2c;
+      --danger-soft: rgba(163, 58, 44, 0.10);
+
+      --sidebar: #0d1716;
+      --sidebar-raised: #172321;
+      --sidebar-ink: #e7eeec;
+      --sidebar-ink-2: #9caeaa;
+      --sidebar-ink-3: #7b8d89;
+
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+      --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    }
+
+    /* ==========================================================================
+       2. BASIC RESET & APP LAYOUT
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink);
+      background-color: var(--paper);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ==========================================================================
+       3. TOP HEADER
+       ========================================================================== */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56px;
+      padding: 0 28px;
+      background-color: var(--paper);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-user-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      border-radius: 6px;
+      background-color: var(--raised);
+      color: var(--ink-2);
+    }
+
+    /* ==========================================================================
+       4. TWO-COLUMN WORKSPACE (DARK SIDEBAR + CONTENT)
+       ========================================================================== */
+    .workspace-wrapper {
+      flex: 1;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar);
+      color: var(--sidebar-ink);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sidebar-ink-3);
+      margin-bottom: 12px;
+      padding: 0 10px;
+    }
+
+    .sidebar-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 14px;
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--sidebar-ink-2);
+      font-family: var(--sans);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .sidebar-btn:hover {
+      background-color: var(--sidebar-raised);
+      color: var(--sidebar-ink);
+    }
+
+    .sidebar-btn.active {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
+    .content-area {
+      flex: 1;
+      padding: 36px 40px;
+      max-width: 1120px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ==========================================================================
+       5. SUMMARY STAT CARDS
+       ========================================================================== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      margin-bottom: 6px;
+    }
+
+    .stat-number {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    /* ==========================================================================
+       6. BUTTONS & TABLES
+       ========================================================================== */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-primary {
+      background-color: var(--accent);
+      color: var(--on-accent);
+    }
+
+    .button-primary:hover:not(:disabled) {
+      background-color: var(--accent-dark);
+    }
+
+    .button-secondary {
+      background-color: var(--card);
+      border-color: var(--line-strong);
+      color: var(--ink);
+    }
+
+    .button-secondary:hover:not(:disabled) {
+      background-color: var(--raised);
+    }
+
+    .button-danger {
+      background-color: var(--card);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .button-danger:hover:not(:disabled) {
+      background-color: var(--danger-soft);
+    }
+
+    .button-small {
+      padding: 4px 10px;
+      font-size: 11.5px;
+    }
+
+    .table-container {
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .data-table th {
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      border-bottom: 1px solid var(--line);
+      background-color: var(--paper);
+    }
+
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 13.5px;
+    }
+
+    .data-table tr:hover {
+      background-color: var(--hover);
+      cursor: pointer;
+    }
+
+    .table-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .badge-waiting { background-color: var(--raised); color: var(--ink-2); }
+    .badge-active { background-color: var(--accent-soft); color: var(--accent); }
+    .badge-ended { background-color: var(--sunken); color: var(--ink-3); }
+
+    /* ==========================================================================
+       7. FORMS, TEXTAREAS & CODE
+       ========================================================================== */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+
+    .textarea-code {
+      width: 100%;
+      height: 280px;
+      padding: 14px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--ink);
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .textarea-code:focus, .select-dropdown:focus {
+      outline: 2px solid var(--accent);
+    }
+
+    .select-dropdown {
+      height: 38px;
+      padding: 0 12px;
+      font-family: var(--sans);
+      font-size: 13.5px;
+      color: var(--ink);
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+    }
+
+    .verification-box {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: var(--mono);
+      line-height: 1.5;
+    }
+
+    .box-success {
+      background-color: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .box-error {
+      background-color: var(--danger-soft);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    /* Drilldown question cards */
+    .drilldown-card {
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .drilldown-q-title {
+      font-weight: 600;
+      font-size: 14.5px;
+      margin-bottom: 10px;
+    }
+
+    .text-ok { color: var(--ok); font-weight: 500; }
+    .text-danger { color: var(--danger); font-weight: 500; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal-box {
+      background-color: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-title {
+      font-family: var(--serif);
+      font-size: 19px;
+      margin-bottom: 10px;
+    }
+
+    .modal-message {
+      font-size: 13.5px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .toast-message {
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 100;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .toast-success { background-color: var(--accent); color: var(--on-accent); }
+    .toast-error { background-color: var(--danger); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <a href="teacher.html" class="brand-logo">
+      <div class="brand-icon">Q</div>
+      <span class="brand-name">QuizPulse</span>
+    </a>
+    <div class="header-user-area">
+      <span id="teacher-name-badge" class="user-badge">Organizer</span>
+      <button id="teacher-logout-btn" type="button" class="button button-secondary button-small">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Workspace Container (Sidebar + Main Content Area) -->
+  <div class="workspace-wrapper">
+
+    <!-- Dark Left Sidebar -->
+    <nav class="sidebar">
+      <div>
+        <div class="sidebar-section-title">Navigation</div>
+        <ul class="sidebar-nav-list">
+          <li>
+            <button id="nav-quizzes-btn" type="button" class="sidebar-btn active">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              My Assessments
+            </button>
+          </li>
+          <li>
+            <button id="nav-create-btn" type="button" class="sidebar-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Create New Quiz
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Dynamic Content Area -->
+    <main class="content-area">
+
+      <!-- ====================================================================
+           TAB 1: MY QUIZZES (DASHBOARD)
+           ==================================================================== -->
+      <section id="tab-quizzes">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h1 style="font-family: var(--serif); font-size: 26px; font-weight: 500;">Faculty Overview</h1>
+            <p style="color: var(--ink-2); font-size: 13.5px;">Manage active assessment sessions and inspect historical candidate data.</p>
+          </div>
+          <button id="btn-quick-create" type="button" class="button button-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Create New Quiz
+          </button>
+        </div>
+
+        <!-- Summary Metric Cards -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Quizzes</div>
+            <div id="stat-total-quizzes" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Sessions</div>
+            <div id="stat-active-quizzes" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Submissions</div>
+            <div id="stat-total-submissions" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Class Average</div>
+            <div id="stat-class-average" class="stat-number">—</div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Quiz Title</th>
+                <th>Room Code</th>
+                <th>Created</th>
+                <th>Status</th>
+                <th>Submissions</th>
+                <th>Average Score</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="quizzes-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--ink-3);">Loading your quizzes...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 2: CREATE NEW QUIZ (JSON PASTE & VERIFY)
+           ==================================================================== -->
+      <section id="tab-create" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h1 style="font-family: var(--serif); font-size: 26px; font-weight: 500;">Create New Assessment</h1>
+            <p style="color: var(--ink-2); font-size: 13.5px;">Paste your standardized quiz JSON specification below to verify schema and generate a 6-digit room code.</p>
+          </div>
+          <button id="btn-load-sample" type="button" class="button button-secondary">Load Sample JSON</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="quiz-json-textarea">Quiz JSON Specification</label>
+          <textarea id="quiz-json-textarea" class="textarea-code" placeholder="Paste your quiz JSON object here..."></textarea>
+        </div>
+
+        <div id="json-verification-box" class="verification-box hidden"></div>
+
+        <div style="display: flex; gap: 12px; margin-top: 18px;">
+          <button id="btn-verify-json" type="button" class="button button-secondary">
+            Verify Schema
+          </button>
+          <button id="btn-save-quiz" type="button" class="button button-primary" disabled>
+            Save & Generate Code
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 3: LIVE ROOM CONTROL PANEL
+           ==================================================================== -->
+      <section id="tab-live" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-3); text-transform: uppercase;">
+              ROOM CODE: <span id="live-room-code" style="font-weight: bold; color: var(--accent);">000000</span>
+            </div>
+            <h1 id="live-quiz-title" style="font-family: var(--serif); font-size: 26px; font-weight: 500;">Assessment Control Room</h1>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="btn-start-quiz" type="button" class="button button-primary">Start Quiz</button>
+            <button id="btn-end-quiz" type="button" class="button button-danger">End Quiz</button>
+          </div>
+        </div>
+
+        <!-- Room Settings & Status Controls -->
+        <div class="stat-card" style="margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="stat-label">Live Status</div>
+              <span id="live-status-pill" class="table-badge badge-waiting">waiting</span>
+            </div>
+            <div>
+              <label class="form-label" for="live-visibility-select">Post-Quiz Visibility</label>
+              <select id="live-visibility-select" class="select-dropdown">
+                <option value="marks_only">Marks Only (Score ratio only)</option>
+                <option value="marks_and_answers">Marks & Answers (Score + correct answers)</option>
+                <option value="full_analysis">Full Analysis (Marks, answers, topic & peer stats)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="font-family: var(--serif); font-size: 18px; margin-bottom: 12px;">Candidate Roster & Attempts</h2>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Status</th>
+                <th>Violations</th>
+                <th>Score</th>
+                <th>Submitted At</th>
+                <th>Inspect</th>
+              </tr>
+            </thead>
+            <tbody id="live-roster-tbody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--ink-3);">No candidates joined yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 4: PAST QUIZ OVERVIEW & STATS
+           ==================================================================== -->
+      <section id="tab-overview" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-3);">HISTORICAL REPORT</div>
+            <h1 id="overview-title" style="font-family: var(--serif); font-size: 26px; font-weight: 500;">Quiz Performance Summary</h1>
+          </div>
+          <button id="btn-back-to-quizzes" type="button" class="button button-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Quizzes
+          </button>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Attempts</div>
+            <div id="ov-attempts" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Submitted</div>
+            <div id="ov-submitted" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Terminated (Anti-Cheat)</div>
+            <div id="ov-terminated" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Average Score</div>
+            <div id="ov-avg-score" class="stat-number">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Highest / Lowest</div>
+            <div id="ov-high-low" class="stat-number">0 / 0</div>
+          </div>
+        </div>
+
+        <!-- Per Question Accuracy Breakdown -->
+        <h2 style="font-family: var(--serif); font-size: 18px; margin: 24px 0 12px 0;">Per-Question Performance</h2>
+        <div class="table-container" style="margin-bottom: 28px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Question Text</th>
+                <th>Topic</th>
+                <th>Correct Count</th>
+                <th>Accuracy (%)</th>
+              </tr>
+            </thead>
+            <tbody id="overview-questions-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Full Student Submissions Table -->
+        <h2 style="font-family: var(--serif); font-size: 18px; margin-bottom: 12px;">Candidate Attempts</h2>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Violations</th>
+                <th>Submitted At</th>
+                <th>Drill-Down</th>
+              </tr>
+            </thead>
+            <tbody id="overview-students-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================
+           TAB 5: STUDENT DRILL-DOWN
+           ==================================================================== -->
+      <section id="tab-drilldown" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <div style="font-family: var(--mono); font-size: 11px; color: var(--ink-3);">STUDENT DRILL-DOWN</div>
+            <h1 id="drilldown-header" style="font-family: var(--serif); font-size: 26px; font-weight: 500;">Candidate Attempt Review</h1>
+          </div>
+          <button id="btn-back-to-overview" type="button" class="button button-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Overview
+          </button>
+        </div>
+
+        <div id="drilldown-summary-banner" class="stat-card" style="margin-bottom: 24px;">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div id="drilldown-questions-container">
+          <!-- Dynamically populated list of questions with answers -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Confirmation Modal Popup -->
+  <div id="confirmation-modal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <h3 id="modal-title" class="modal-title">Confirm Action</h3>
+      <p id="modal-message" class="modal-message">Are you sure you want to proceed?</p>
+      <div class="modal-actions">
+        <button id="modal-btn-cancel" type="button" class="button button-secondary">Cancel</button>
+        <button id="modal-btn-confirm" type="button" class="button button-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification-toast" class="toast-message hidden"></div>
+
+  <!-- ==========================================================================
+       SCRIPTS: Firebase CDN -> firebase.js -> auth.js (No app.js needed here)
+       ========================================================================== -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    // ===== ROUTE GUARD =====
+    const loggedInTeacher = requireTeacherAuth();
+
+    // ===== DOM ELEMENTS =====
+    const teacherNameBadge = document.getElementById("teacher-name-badge");
+    const teacherLogoutBtn = document.getElementById("teacher-logout-btn");
+
+    const navQuizzesBtn = document.getElementById("nav-quizzes-btn");
+    const navCreateBtn = document.getElementById("nav-create-btn");
+    const btnQuickCreate = document.getElementById("btn-quick-create");
+
+    const tabQuizzes = document.getElementById("tab-quizzes");
+    const tabCreate = document.getElementById("tab-create");
+    const tabLive = document.getElementById("tab-live");
+    const tabOverview = document.getElementById("tab-overview");
+    const tabDrilldown = document.getElementById("tab-drilldown");
+
+    const statTotalQuizzes = document.getElementById("stat-total-quizzes");
+    const statActiveQuizzes = document.getElementById("stat-active-quizzes");
+    const statTotalSubmissions = document.getElementById("stat-total-submissions");
+    const statClassAverage = document.getElementById("stat-class-average");
+    const quizzesTableBody = document.getElementById("quizzes-table-body");
+
+    const quizJsonTextarea = document.getElementById("quiz-json-textarea");
+    const btnLoadSample = document.getElementById("btn-load-sample");
+    const btnVerifyJson = document.getElementById("btn-verify-json");
+    const btnSaveQuiz = document.getElementById("btn-save-quiz");
+    const jsonVerificationBox = document.getElementById("json-verification-box");
+
+    const liveRoomCode = document.getElementById("live-room-code");
+    const liveQuizTitle = document.getElementById("live-quiz-title");
+    const liveStatusPill = document.getElementById("live-status-pill");
+    const liveVisibilitySelect = document.getElementById("live-visibility-select");
+    const btnStartQuiz = document.getElementById("btn-start-quiz");
+    const btnEndQuiz = document.getElementById("btn-end-quiz");
+    const liveRosterTbody = document.getElementById("live-roster-tbody");
+
+    const overviewTitle = document.getElementById("overview-title");
+    const btnBackToQuizzes = document.getElementById("btn-back-to-quizzes");
+    const ovAttempts = document.getElementById("ov-attempts");
+    const ovSubmitted = document.getElementById("ov-submitted");
+    const ovTerminated = document.getElementById("ov-terminated");
+    const ovAvgScore = document.getElementById("ov-avg-score");
+    const ovHighLow = document.getElementById("ov-high-low");
+    const overviewQuestionsTbody = document.getElementById("overview-questions-tbody");
+    const overviewStudentsTbody = document.getElementById("overview-students-tbody");
+
+    const btnBackToOverview = document.getElementById("btn-back-to-overview");
+    const drilldownHeader = document.getElementById("drilldown-header");
+    const drilldownSummaryBanner = document.getElementById("drilldown-summary-banner");
+    const drilldownQuestionsContainer = document.getElementById("drilldown-questions-container");
+
+    const confirmationModal = document.getElementById("confirmation-modal");
+    const modalTitle = document.getElementById("modal-title");
+    const modalMessage = document.getElementById("modal-message");
+    const modalBtnCancel = document.getElementById("modal-btn-cancel");
+    const modalBtnConfirm = document.getElementById("modal-btn-confirm");
+
+    let verifiedQuizData = null;
+    let selectedActiveQuiz = null;
+    let modalActionCallback = null;
+    let liveRosterInterval = null;
+
+    if (loggedInTeacher) {
+      teacherNameBadge.textContent = loggedInTeacher.name || loggedInTeacher.email;
+    }
+
+    // Modal Helper
+    function showConfirmModal(title, msg, onConfirm) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = msg;
+      modalActionCallback = onConfirm;
+      confirmationModal.classList.remove("hidden");
+    }
+
+    modalBtnCancel.addEventListener("click", function() {
+      confirmationModal.classList.add("hidden");
+      modalActionCallback = null;
+    });
+
+    modalBtnConfirm.addEventListener("click", function() {
+      confirmationModal.classList.add("hidden");
+      if (modalActionCallback) {
+        modalActionCallback();
+      }
+    });
+
+    // View Switching
+    function hideAllTabs() {
+      tabQuizzes.classList.add("hidden");
+      tabCreate.classList.add("hidden");
+      tabLive.classList.add("hidden");
+      tabOverview.classList.add("hidden");
+      tabDrilldown.classList.add("hidden");
+
+      navQuizzesBtn.classList.remove("active");
+      navCreateBtn.classList.remove("active");
+
+      if (liveRosterInterval !== null) {
+        clearInterval(liveRosterInterval);
+        liveRosterInterval = null;
+      }
+    }
+
+    function showDashboardTab() {
+      hideAllTabs();
+      tabQuizzes.classList.remove("hidden");
+      navQuizzesBtn.classList.add("active");
+      loadTeacherDashboard();
+    }
+
+    function showCreateTab() {
+      hideAllTabs();
+      tabCreate.classList.remove("hidden");
+      navCreateBtn.classList.add("active");
+    }
+
+    navQuizzesBtn.addEventListener("click", showDashboardTab);
+    navCreateBtn.addEventListener("click", showCreateTab);
+    btnQuickCreate.addEventListener("click", showCreateTab);
+    btnBackToQuizzes.addEventListener("click", showDashboardTab);
+
+    // Teacher Logout
+    teacherLogoutBtn.addEventListener("click", function() {
+      showConfirmModal("Sign Out?", "Are you sure you want to sign out?", function() {
+        teacherSignOut();
+      });
+    });
+
+    // ===== DASHBOARD DATA LOADING =====
+    async function loadTeacherDashboard() {
+      const email = loggedInTeacher ? loggedInTeacher.email : "all";
+      const quizzes = await fetchTeacherQuizzes(email);
+
+      statTotalQuizzes.textContent = quizzes.length;
+
+      let activeCount = 0;
+      let totalSubs = 0;
+      let scoreSum = 0;
+      let scoredSubs = 0;
+
+      quizzesTableBody.innerHTML = "";
+
+      if (quizzes.length === 0) {
+        quizzesTableBody.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:24px; color:var(--ink-3);'>No assessments created yet. Click '+ Create New Quiz' to begin!</td></tr>";
+        statActiveQuizzes.textContent = "0";
+        statTotalSubmissions.textContent = "0";
+        statClassAverage.textContent = "—";
+        return;
+      }
+
+      for (let i = 0; i < quizzes.length; i = i + 1) {
+        const q = quizzes[i];
+        if (q.status === "active") {
+          activeCount = activeCount + 1;
+        }
+
+        const subs = q.submissions || [];
+        totalSubs = totalSubs + subs.length;
+
+        let qScoreSum = 0;
+        let qScoredCount = 0;
+        for (let s = 0; s < subs.length; s = s + 1) {
+          if (subs[s].score !== null && subs[s].score !== undefined) {
+            qScoreSum = qScoreSum + subs[s].score;
+            qScoredCount = qScoredCount + 1;
+            scoreSum = scoreSum + subs[s].score;
+            scoredSubs = scoredSubs + 1;
+          }
+        }
+
+        let qAvg = "—";
+        if (qScoredCount > 0) {
+          qAvg = (qScoreSum / qScoredCount).toFixed(1);
+        }
+
+        const row = document.createElement("tr");
+
+        const statusClass = q.status === "active" ? "badge-active" : (q.status === "waiting" ? "badge-waiting" : "badge-ended");
+
+        row.innerHTML = "<td><strong>" + q.quizTitle + "</strong></td>" +
+                        "<td><span style='font-family:var(--mono); font-weight:bold;'>" + q.orgId + "</span></td>" +
+                        "<td>" + formatDateSimple(q.createdAt) + "</td>" +
+                        "<td><span class='table-badge " + statusClass + "'>" + q.status + "</span></td>" +
+                        "<td>" + subs.length + " attempts</td>" +
+                        "<td>" + qAvg + "</td>" +
+                        "<td><button class='button button-secondary button-small open-quiz-btn'>Inspect</button></td>";
+
+        row.querySelector(".open-quiz-btn").addEventListener("click", function(event) {
+          event.stopPropagation();
+          openQuizLiveOrOverview(q);
+        });
+
+        row.addEventListener("click", function() {
+          openQuizLiveOrOverview(q);
+        });
+
+        quizzesTableBody.appendChild(row);
+      }
+
+      statActiveQuizzes.textContent = activeCount;
+      statTotalSubmissions.textContent = totalSubs;
+      if (scoredSubs > 0) {
+        statClassAverage.textContent = (scoreSum / scoredSubs).toFixed(1);
+      } else {
+        statClassAverage.textContent = "—";
+      }
+    }
+
+    function openQuizLiveOrOverview(quiz) {
+      selectedActiveQuiz = quiz;
+      if (quiz.status === "ended") {
+        showOverviewTab(quiz);
+      } else {
+        showLiveTab(quiz);
+      }
+    }
+
+    // ===== JSON VERIFY & CREATE QUIZ =====
+    btnLoadSample.addEventListener("click", function() {
+      const sample = {
+        quizTitle: "Computer Science Assessment",
+        timers: {
+          entryWindowSeconds: 300,
+          attemptDurationSeconds: 600
+        },
+        settings: {
+          postQuizVisibility: "full_analysis"
+        },
+        questions: [
+          {
+            id: "q1",
+            questionText: "Which data structure follows the LIFO (Last-In First-Out) principle?",
+            topic: "Data Structures",
+            options: ["Queue", "Stack", "Binary Tree", "Linked List"],
+            correctOptionIndex: 1
+          },
+          {
+            id: "q2",
+            questionText: "What is the worst-case time complexity of standard QuickSort?",
+            topic: "Algorithms",
+            options: ["O(n)", "O(n log n)", "O(n^2)", "O(1)"],
+            correctOptionIndex: 2
+          },
+          {
+            id: "q3",
+            questionText: "Which HTML5 tag is used to include client-side JavaScript code?",
+            topic: "Web Development",
+            options: ["<js>", "<script>", "<javascript>", "<code>"],
+            correctOptionIndex: 1
+          }
+        ]
+      };
+      quizJsonTextarea.value = JSON.stringify(sample, null, 2);
+      btnSaveQuiz.disabled = true;
+      jsonVerificationBox.classList.add("hidden");
+    });
+
+    btnVerifyJson.addEventListener("click", function() {
+      const rawText = quizJsonTextarea.value.trim();
+      jsonVerificationBox.classList.remove("hidden");
+
+      try {
+        const parsed = JSON.parse(rawText);
+
+        if (!parsed.quizTitle || typeof parsed.quizTitle !== "string") {
+          throw new Error("Missing or invalid 'quizTitle' string.");
+        }
+        if (!parsed.timers || typeof parsed.timers.entryWindowSeconds !== "number" || typeof parsed.timers.attemptDurationSeconds !== "number") {
+          throw new Error("Missing 'timers' object with 'entryWindowSeconds' and 'attemptDurationSeconds'.");
+        }
+        if (!parsed.settings || !parsed.settings.postQuizVisibility) {
+          throw new Error("Missing 'settings.postQuizVisibility' (marks_only, marks_and_answers, or full_analysis).");
+        }
+        if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+          throw new Error("'questions' must be an array with at least 1 question.");
+        }
+
+        for (let i = 0; i < parsed.questions.length; i = i + 1) {
+          const q = parsed.questions[i];
+          if (!q.id || !q.questionText || !Array.isArray(q.options) || q.options.length < 2) {
+            throw new Error("Question " + (i + 1) + " must have 'id', 'questionText', and at least 2 'options'.");
+          }
+          if (typeof q.correctOptionIndex !== "number" || q.correctOptionIndex < 0 || q.correctOptionIndex >= q.options.length) {
+            throw new Error("Question " + (i + 1) + " 'correctOptionIndex' must be between 0 and " + (q.options.length - 1) + ".");
+          }
+        }
+
+        verifiedQuizData = parsed;
+        jsonVerificationBox.className = "verification-box box-success";
+        jsonVerificationBox.textContent = "✓ Schema verified successfully! (" + parsed.questions.length + " questions validated). Click 'Save & Generate Code' below.";
+        btnSaveQuiz.disabled = false;
+      } catch (err) {
+        verifiedQuizData = null;
+        jsonVerificationBox.className = "verification-box box-error";
+        jsonVerificationBox.textContent = "✗ Schema error: " + err.message;
+        btnSaveQuiz.disabled = true;
+      }
+    });
+
+    btnSaveQuiz.addEventListener("click", async function() {
+      if (!verifiedQuizData) {
+        return;
+      }
+
+      btnSaveQuiz.disabled = true;
+      btnSaveQuiz.textContent = "Saving to database...";
+
+      // Separate public questions from answerKey
+      const publicQuestions = [];
+      const answerKey = {};
+
+      for (let i = 0; i < verifiedQuizData.questions.length; i = i + 1) {
+        const q = verifiedQuizData.questions[i];
+        publicQuestions.push({
+          id: q.id,
+          questionText: q.questionText,
+          topic: q.topic || "General",
+          options: q.options
+        });
+        answerKey[q.id] = q.correctOptionIndex;
+      }
+
+      const randomCode = String(Math.floor(100000 + Math.random() * 900000));
+
+      const newQuiz = {
+        orgId: randomCode,
+        organizerEmail: loggedInTeacher ? loggedInTeacher.email : "organizer@university.edu",
+        quizTitle: verifiedQuizData.quizTitle,
+        createdAt: new Date().toISOString(),
+        status: "waiting",
+        quizStartTimestamp: null,
+        entryWindowSeconds: verifiedQuizData.timers.entryWindowSeconds,
+        attemptDurationSeconds: verifiedQuizData.timers.attemptDurationSeconds,
+        postQuizVisibility: verifiedQuizData.settings.postQuizVisibility,
+        allowedStudents: verifiedQuizData.allowedStudents || [],
+        questions: publicQuestions,
+        answerKey: answerKey,
+        submissions: []
+      };
+
+      await saveQuizToDatabase(newQuiz);
+
+      showToast("Quiz created! Room Code: " + randomCode, false);
+      btnSaveQuiz.disabled = false;
+      btnSaveQuiz.textContent = "Save & Generate Code";
+
+      showLiveTab(newQuiz);
+    });
+
+    // ===== LIVE ROOM CONTROL =====
+    function showLiveTab(quiz) {
+      hideAllTabs();
+      tabLive.classList.remove("hidden");
+      selectedActiveQuiz = quiz;
+
+      liveRoomCode.textContent = quiz.orgId;
+      liveQuizTitle.textContent = quiz.quizTitle;
+      liveVisibilitySelect.value = quiz.postQuizVisibility || "marks_only";
+
+      updateLiveStatusUI(quiz.status);
+      renderLiveRoster(quiz);
+
+      // Poll live room every 2.5s for candidate submissions
+      liveRosterInterval = setInterval(async function() {
+        const updatedQuiz = await fetchQuizByCode(selectedActiveQuiz.orgId);
+        if (updatedQuiz !== null) {
+          selectedActiveQuiz = updatedQuiz;
+          updateLiveStatusUI(updatedQuiz.status);
+          renderLiveRoster(updatedQuiz);
+        }
+      }, 2500);
+    }
+
+    function updateLiveStatusUI(status) {
+      liveStatusPill.textContent = status;
+      liveStatusPill.className = "table-badge " + (status === "active" ? "badge-active" : (status === "waiting" ? "badge-waiting" : "badge-ended"));
+
+      if (status === "waiting") {
+        btnStartQuiz.classList.remove("hidden");
+        btnEndQuiz.classList.add("hidden");
+      } else if (status === "active") {
+        btnStartQuiz.classList.add("hidden");
+        btnEndQuiz.classList.remove("hidden");
+      } else {
+        btnStartQuiz.classList.add("hidden");
+        btnEndQuiz.classList.add("hidden");
+      }
+    }
+
+    function renderLiveRoster(quiz) {
+      const subs = quiz.submissions || [];
+      liveRosterTbody.innerHTML = "";
+
+      if (subs.length === 0) {
+        liveRosterTbody.innerHTML = "<tr><td colspan='6' style='text-align: center; color: var(--ink-3); padding: 20px;'>Waiting for students to join room " + quiz.orgId + "...</td></tr>";
+        return;
+      }
+
+      for (let i = 0; i < subs.length; i = i + 1) {
+        const s = subs[i];
+        const row = document.createElement("tr");
+
+        let scoreDisplay = "In Progress";
+        if (s.score !== null && s.score !== undefined) {
+          scoreDisplay = s.score + " / " + quiz.questions.length;
+        }
+
+        row.innerHTML = "<td><strong>" + s.studentId + "</strong></td>" +
+                        "<td><span class='table-badge " + (s.status === "submitted" ? "badge-active" : "badge-waiting") + "'>" + s.status + "</span></td>" +
+                        "<td>" + (s.tabViolations || 0) + " / 3</td>" +
+                        "<td>" + scoreDisplay + "</td>" +
+                        "<td>" + formatDateSimple(s.submittedAt) + "</td>" +
+                        "<td><button class='button button-secondary button-small view-sub-btn'>Inspect</button></td>";
+
+        row.querySelector(".view-sub-btn").addEventListener("click", function() {
+          showStudentDrilldownTab(quiz, s.studentId);
+        });
+
+        liveRosterTbody.appendChild(row);
+      }
+    }
+
+    // Start Quiz Button
+    btnStartQuiz.addEventListener("click", function() {
+      showConfirmModal("Start Quiz Session?", "Candidates in the waiting room will immediately begin their entry window timer.", async function() {
+        await updateQuizStatus(selectedActiveQuiz.orgId, "active");
+        selectedActiveQuiz.status = "active";
+        updateLiveStatusUI("active");
+        showToast("Assessment room is now LIVE!", false);
+      });
+    });
+
+    // End Quiz Button
+    btnEndQuiz.addEventListener("click", function() {
+      showConfirmModal("End Quiz Session?", "All active student attempts will be auto-submitted and the room closed.", async function() {
+        await updateQuizStatus(selectedActiveQuiz.orgId, "ended");
+        selectedActiveQuiz.status = "ended";
+        updateLiveStatusUI("ended");
+        showToast("Assessment session ended.", false);
+        showOverviewTab(selectedActiveQuiz);
+      });
+    });
+
+    // Visibility Selector Change
+    liveVisibilitySelect.addEventListener("change", async function() {
+      const newVis = liveVisibilitySelect.value;
+      await updateQuizVisibility(selectedActiveQuiz.orgId, newVis);
+      selectedActiveQuiz.postQuizVisibility = newVis;
+      showToast("Post-quiz visibility updated to " + newVis, false);
+    });
+
+    // ===== TAB 4: PAST QUIZ OVERVIEW =====
+    function showOverviewTab(quiz) {
+      hideAllTabs();
+      tabOverview.classList.remove("hidden");
+      selectedActiveQuiz = quiz;
+
+      overviewTitle.textContent = quiz.quizTitle + " (Room " + quiz.orgId + ")";
+
+      const stats = calculateQuizOverviewStats(quiz);
+
+      ovAttempts.textContent = stats.totalAttempts;
+      ovSubmitted.textContent = stats.submittedCount;
+      ovTerminated.textContent = stats.terminatedCount;
+      ovAvgScore.textContent = stats.averageScore + " / " + quiz.questions.length;
+      ovHighLow.textContent = stats.highestScore + " / " + stats.lowestScore;
+
+      // Question Breakdown Table
+      overviewQuestionsTbody.innerHTML = "";
+      for (let i = 0; i < stats.questionStats.length; i = i + 1) {
+        const qs = stats.questionStats[i];
+        const qRow = document.createElement("tr");
+        qRow.innerHTML = "<td>Q" + (i + 1) + "</td>" +
+                         "<td>" + qs.questionText + "</td>" +
+                         "<td><span class='table-badge badge-waiting'>" + qs.topic + "</span></td>" +
+                         "<td>" + qs.correctCount + " / " + stats.scoredCount + "</td>" +
+                         "<td><strong>" + qs.percentageCorrect + "%</strong></td>";
+        overviewQuestionsTbody.appendChild(qRow);
+      }
+
+      // Students Table
+      overviewStudentsTbody.innerHTML = "";
+      const subs = quiz.submissions || [];
+      if (subs.length === 0) {
+        overviewStudentsTbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:16px; color:var(--ink-3);'>No student attempts found.</td></tr>";
+      } else {
+        for (let s = 0; s < subs.length; s = s + 1) {
+          const sub = subs[s];
+          const sRow = document.createElement("tr");
+
+          let scDisplay = "—";
+          if (sub.score !== null && sub.score !== undefined) {
+            scDisplay = sub.score + " / " + quiz.questions.length;
+          }
+
+          sRow.innerHTML = "<td><strong>" + sub.studentId + "</strong></td>" +
+                           "<td><span class='table-badge " + (sub.status === "submitted" ? "badge-active" : "badge-waiting") + "'>" + sub.status + "</span></td>" +
+                           "<td>" + scDisplay + "</td>" +
+                           "<td>" + (sub.tabViolations || 0) + "</td>" +
+                           "<td>" + formatDateSimple(sub.submittedAt) + "</td>" +
+                           "<td><button class='button button-secondary button-small drill-btn'>Inspect</button></td>";
+
+          sRow.querySelector(".drill-btn").addEventListener("click", function() {
+            showStudentDrilldownTab(quiz, sub.studentId);
+          });
+
+          overviewStudentsTbody.appendChild(sRow);
+        }
+      }
+    }
+
+    // ===== TAB 5: STUDENT DRILL-DOWN =====
+    function showStudentDrilldownTab(quiz, studentId) {
+      hideAllTabs();
+      tabDrilldown.classList.remove("hidden");
+
+      const drillData = calculateStudentDrilldownData(quiz, studentId);
+      if (!drillData) {
+        showToast("Drilldown record not found.", true);
+        return;
+      }
+
+      const sub = drillData.submission;
+      drilldownHeader.textContent = "Candidate: " + studentId;
+
+      let scoreDisplay = "Pending";
+      if (sub.score !== null) {
+        scoreDisplay = sub.score + " / " + quiz.questions.length;
+      }
+
+      drilldownSummaryBanner.innerHTML = "<div style='display:flex; justify-content:space-between; align-items:center;'>" +
+        "<div><div class='stat-label'>Final Score</div><div class='stat-number'>" + scoreDisplay + "</div></div>" +
+        "<div><div class='stat-label'>Attempt Status</div><span class='table-badge badge-active'>" + sub.status + "</span></div>" +
+        "<div><div class='stat-label'>Violations</div><div style='font-size:18px; font-weight:bold;'>" + (sub.tabViolations || 0) + " / 3</div></div>" +
+        "<div><div class='stat-label'>Submitted At</div><div>" + formatDateSimple(sub.submittedAt) + "</div></div>" +
+        "</div>";
+
+      drilldownQuestionsContainer.innerHTML = "";
+
+      for (let i = 0; i < drillData.questions.length; i = i + 1) {
+        const dq = drillData.questions[i];
+        const card = document.createElement("div");
+        card.className = "drilldown-card";
+
+        const correctnessLabel = dq.isCorrect ? "<span class='text-ok'>✓ Correct</span>" : "<span class='text-danger'>✗ Incorrect</span>";
+
+        card.innerHTML = "<div style='display:flex; justify-content:space-between; margin-bottom:6px;'>" +
+                         "<span style='font-family:var(--mono); font-weight:bold;'>Q" + dq.number + " · " + dq.topic + "</span>" +
+                         "<div>" + correctnessLabel + " · <span style='font-size:12px; color:var(--ink-3);'>Time: " + dq.timeSpentSeconds + "s</span></div>" +
+                         "</div>" +
+                         "<div class='drilldown-q-title'>" + dq.questionText + "</div>" +
+                         "<div style='font-size:13px; line-height:1.6; margin-top:8px;'>" +
+                         "<div><strong>Candidate Marked:</strong> " + dq.studentChoiceText + "</div>" +
+                         "<div><strong>Official Correct:</strong> " + dq.correctChoiceText + "</div>" +
+                         "</div>";
+
+        drilldownQuestionsContainer.appendChild(card);
+      }
+    }
+
+    btnBackToOverview.addEventListener("click", function() {
+      if (selectedActiveQuiz) {
+        showOverviewTab(selectedActiveQuiz);
+      } else {
+        showDashboardTab();
+      }
+    });
+
+    // Initial Load
+    showDashboardTab();
+  </script>
+</body>
+</html>
+
